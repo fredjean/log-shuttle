@@ -2,6 +2,7 @@ package shuttle
 
 import (
 	"encoding/json"
+	"strings"
 	"time"
 )
 
@@ -26,7 +27,7 @@ type JSONLogLine struct {
 func (lle LogLineEncoder) Encode() (msg []byte, err error) {
 	return json.Marshal(
 		JSONLogLine{
-			Msg:  string(lle.line),
+			Msg:  strings.Trim(string(lle.line), "\n"),
 			When: lle.when,
 		},
 	)

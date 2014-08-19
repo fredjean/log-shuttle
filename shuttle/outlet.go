@@ -11,6 +11,7 @@ import (
 	"runtime"
 	"sync"
 	"time"
+  "strings"
 )
 
 const (
@@ -37,9 +38,9 @@ func StartOutlets(config ShuttleConfig, drops, lost *Counter, stats chan<- Named
 		go func() {
 			var outlet Outlet
 			defer outletWaiter.Done()
-			if config.Destination == "Logplex" {
+			if strings.HasPrefix(config.LogsURL, "http") {
 				outlet = NewHttpOutlet(config, drops, lost, stats, inbox)
-			} else {
+			} else if strings.HasPrefix(config.LogsURL, "kafka"){
 				outlet = NewKafkaOutlet(config, drops, lost, stats, inbox)
 			}
 			outlet.Outlet()

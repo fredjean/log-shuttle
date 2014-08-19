@@ -13,6 +13,7 @@ type KafkaOutlet struct {
 	client   *sarama.Client
 	producer *sarama.Producer
 	config   ShuttleConfig
+	topic    string
 }
 
 func NewKafkaOutlet(config ShuttleConfig, drops, lost *Counter, stats chan<- NamedValue, inbox <-chan Batch) Outlet {
@@ -37,6 +38,8 @@ func NewKafkaOutlet(config ShuttleConfig, drops, lost *Counter, stats chan<- Nam
 		panic(err)
 	}
 
+	topic := strings.Replace(config.LogsURL, "kafka:", "", 1)
+
 	return &KafkaOutlet{
 		drops:    drops,
 		lost:     lost,
@@ -46,6 +49,7 @@ func NewKafkaOutlet(config ShuttleConfig, drops, lost *Counter, stats chan<- Nam
 		config:   config,
 		client:   kafkaClient,
 		producer: producer,
+		topic:    topic,
 	}
 }
 
@@ -62,7 +66,7 @@ func (ka *KafkaOutlet) Outlet() {
 
 func (ka *KafkaOutlet) publish(batch Batch) {
 	for _, ll := range batch.logLines {
-		if err := ka.producer.QueueMessage(ka.config.Topic, nil, LogLineEncoder(ll)); err != nil {
+		if err := ka.producer.QueueMessage(ka.topic, nil, LogLineEncoder(ll)); err != nil {
 			panic(err)
 		}
 	}
