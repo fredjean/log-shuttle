@@ -6,7 +6,7 @@ import (
 	"log/syslog"
 	"os"
 	"sync"
-	"github.com/heroku/log-shuttle/shuttle"
+	"github.com/fredjean/log-shuttle/shuttle"
 )
 
 func MakeBasicBits(config shuttle.ShuttleConfig) (reader shuttle.Reader, deliverableBatches chan shuttle.Batch, programStats *shuttle.ProgramStats, bWaiter, oWaiter *sync.WaitGroup) {
